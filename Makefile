@@ -1,6 +1,7 @@
 .PHONY: relibfoo.dylib runmain clean
 
 runmain: main relibfoo.dylib
+	sw_vers
 	otool -L $<
 	otool -L libfoo.dylib
 	./$<
