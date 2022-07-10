@@ -1,6 +1,7 @@
 MACOSX_VERSION_MIN := 10.10
 
 CFLAGS = -mmacosx-version-min=$(MACOSX_VERSION_MIN)
+COMPATIBILITY_VERSION := 2.0.0
 
 .PHONY: relibfoo.dylib runmain clean
 
@@ -16,12 +17,11 @@ main: main.c libfoo.dylib
 	install_name_tool -add_rpath ${PWD} $@
 
 libfoo.dylib: foo.c
-	cc $(CFLAGS) -shared -o libfoo.0.dylib $^ -current_version 36.0.0 -compatibility_version 36.0.0
-	ln -sf libfoo.0.dylib $@
+	cc $(CFLAGS) -shared -o $@ $^ -current_version $(COMPATIBILITY_VERSION) -compatibility_version $(COMPATIBILITY_VERSION)
 
-relibfoo.dylib: foo.c
-	cc $(CFLAGS) -shared -o libfoo.0.dylib $^ -current_version 35.0.0 -compatibility_version 35.0.0
-	ln -sf libfoo.0.dylib libfoo.dylib
+# Recreate libfoo, but with an older compatibility version number
+relibfoo.dylib:
+	@$(MAKE) -B libfoo.dylib COMPATIBILITY_VERSION=1.0.0
 
 clean:
 	rm -f main libfoo.dylib libfoo.0.dylib
