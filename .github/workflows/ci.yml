@@ -6,7 +6,7 @@ on:
 
 jobs:
   test:
-    name: Test ${{ matrix.os }} - ${{ matrix.macosx-version-min }}
+    name: Test - macOS ${{ matrix.os }} - MACOSX_VERSION_MIN ${{ matrix.macosx-version-min }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -16,6 +16,8 @@ jobs:
           - macos-12
         macosx-version-min:
           - "10.10"
+          - "10.13"
+          - "10.14"
           - "11.6"
     steps:
       - uses: actions/checkout@v3
