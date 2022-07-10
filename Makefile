@@ -1,3 +1,7 @@
+MACOSX_VERSION_MIN := 10.10
+
+CFLAGS = -mmacosx-version-min=$(MACOSX_VERSION_MIN)
+
 .PHONY: relibfoo.dylib runmain clean
 
 runmain: main relibfoo.dylib
@@ -8,21 +12,21 @@ runmain: main relibfoo.dylib
 	./$<
 
 main: main.c libbar.dylib
-	cc -o $@ $< -L. -lbar
+	cc $(CFLAGS) -o $@ $< -L. -lbar
 	install_name_tool -change libbar.dylib @rpath/libbar.dylib $@
 	install_name_tool -add_rpath ${PWD} $@
 
 libbar.dylib: bar.c libfoo.dylib
-	cc -shared -o $@ $^ -L. -lfoo
+	cc $(CFLAGS) -shared -o $@ $^ -L. -lfoo
 	install_name_tool -change libfoo.dylib @rpath/libfoo.dylib $@
 	install_name_tool -add_rpath ${PWD} $@
 
 libfoo.dylib: foo.c
-	cc -shared -o libfoo.0.dylib $^ -current_version 36.0.0 -compatibility_version 36.0.0
+	cc $(CFLAGS) -shared -o libfoo.0.dylib $^ -current_version 36.0.0 -compatibility_version 36.0.0
 	ln -sf libfoo.0.dylib $@
 
 relibfoo.dylib: foo.c
-	cc -shared -o libfoo.0.dylib $^ -current_version 35.0.0 -compatibility_version 35.0.0
+	cc $(CFLAGS) -shared -o libfoo.0.dylib $^ -current_version 35.0.0 -compatibility_version 35.0.0
 	ln -sf libfoo.0.dylib libfoo.dylib
 
 clean:
