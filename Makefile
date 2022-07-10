@@ -12,10 +12,12 @@ main: main.c libfoo.dylib
 	install_name_tool -add_rpath ${PWD} $@
 
 libfoo.dylib: foo.c
-	cc -shared -o $@ $^ -current_version 2.0.0 -compatibility_version 2.0
+	cc -shared -o libfoo.0.dylib $^ -current_version 2.0.0 -compatibility_version 2.0
+	ln -sf libfoo.0.dylib $@
 
 relibfoo.dylib: foo.c
-	cc -shared -o libfoo.dylib $^ -current_version 1.0.0 -compatibility_version 1.0
+	cc -shared -o libfoo.0.dylib $^ -current_version 1.0.0 -compatibility_version 1.0
+	ln -sf libfoo.0.dylib libfoo.dylib
 
 clean:
-	rm -f main libfoo.dylib
+	rm -f main libfoo.dylib libfoo.0.dylib
