@@ -6,6 +6,7 @@ on:
 
 jobs:
   test:
+    name: Test ${{ matrix.os }} - ${{ matrix.macosx-version-min }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -13,7 +14,10 @@ jobs:
         os:
           - macos-11
           - macos-12
+        macosx-version-min:
+          - "10.10"
+          - "11.6"
     steps:
       - uses: actions/checkout@v3
-      - run: make
+      - run: make MACOSX_VERSION_MIN=${{ matrix.macosx-version-min }}
       - run: julia -E '@ccall "./libbar.dylib".bar()::Cint'
