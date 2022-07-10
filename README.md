@@ -32,10 +32,10 @@ repository shows an example of use:
 Since `main` requires `libfoo.dylib` with version `2.0.0` and the `libfoo.dylib` shared
 library currently available has version number `1.0.0`, this in principle should trigger the
 check of the version number, and refuse to run `main` because of the incompatible version
-number.  However whether this check is actually run or not depends on:
+number.  However, whether this check is actually run or not depends on:
 
-* what's the minimum compatible macOS version for the library
-* what's the version macOS where you're running this.
+* what's the minimum compatible macOS version for the library,
+* and what's the version macOS you're using.
 
 As pointed out by `Siguza` in [this answer on Stack
 Overflow](https://stackoverflow.com/a/67067009/2442087):
@@ -56,7 +56,7 @@ Overflow](https://stackoverflow.com/a/67067009/2442087):
 > ```
 >
 > Besides the fact that `0xffffffff` can be used as a wildcard, the interesting bit here is
-> the call to `enforceCompatVersion()`:
+> the call to [`enforceCompatVersion()`](https://opensource.apple.com/source/dyld/dyld-832.7.3/dyld3/MachOFile.cpp.auto.html):
 >
 > ```c++
 > bool MachOFile::enforceCompatVersion() const
@@ -105,9 +105,13 @@ Overflow](https://stackoverflow.com/a/67067009/2442087):
 I'll add that another way to set the minimum supported version of macOS is to pass the flag
 `-mmacosx-version-min=...` to the compiler.
 
-However, I empirically found that this check was removed altogether in macOS 12, as I can't
-trigger the check anymore, not even when using `-mmacosx-version-min=10.0`.  I couldn't find
-the source code for the version of dyld used in macOS 12.
+However, this check was removed altogether in macOS 12. The new source code of `dyld` is
+available at <https://github.com/apple-oss-distributions/dyld>.  The above code path [has
+been
+deleted](https://github.com/apple-oss-distributions/dyld/commit/9a9e3e4cfa7de205d61f4114c9b564e4bab7ef7f#diff-a4220c07a272a49770dacc147307f3b01f83d575c28b52ede7b08cff31cdc63f).
+The method `MachOFile::enforceCompatVersion` is still defined but completely unused.  See
+the [Apple Open Source](https://opensource.apple.com/releases/) website to find which
+version of `dyld` is shipped in each version of macOS.
 
 ## Examples of output
 
@@ -194,5 +198,5 @@ libfoo.dylib:
 Magic number: 42
 ```
 
-The check is apparently never triggered on macOS 12, not even when requesting a relatively
-old version of macOS, and so the program is run normally.
+The check is no longer triggered on macOS 12, not even when requesting a relatively old
+version of macOS, and so the program is run normally.
