@@ -1,8 +1,8 @@
 #include <stdio.h>
 
-int bar();
+int foo();
 
 int main() {
-    printf("Magic number: %d\n", bar());
+    printf("Magic number: %d\n", foo());
     return 0;
 }

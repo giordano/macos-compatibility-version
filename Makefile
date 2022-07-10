@@ -7,17 +7,11 @@ CFLAGS = -mmacosx-version-min=$(MACOSX_VERSION_MIN)
 runmain: main relibfoo.dylib
 	sw_vers
 	otool -L $<
-	otool -L libbar.dylib
 	otool -L libfoo.dylib
 	./$<
 
-main: main.c libbar.dylib
-	cc $(CFLAGS) -o $@ $< -L. -lbar
-	install_name_tool -change libbar.dylib @rpath/libbar.dylib $@
-	install_name_tool -add_rpath ${PWD} $@
-
-libbar.dylib: bar.c libfoo.dylib
-	cc $(CFLAGS) -shared -o $@ $^ -L. -lfoo
+main: main.c libfoo.dylib
+	cc $(CFLAGS) -o $@ $< -L. -lfoo
 	install_name_tool -change libfoo.dylib @rpath/libfoo.dylib $@
 	install_name_tool -add_rpath ${PWD} $@
 
@@ -30,4 +24,4 @@ relibfoo.dylib: foo.c
 	ln -sf libfoo.0.dylib libfoo.dylib
 
 clean:
-	rm -f main libfoo.dylib libfoo.0.dylib libbar.dylib
+	rm -f main libfoo.dylib libfoo.0.dylib
