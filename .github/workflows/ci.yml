@@ -3,9 +3,12 @@ name: CI
 on:
   push:
     branches: "main"
+  pull_request:
+  workflow_dispatch:
 
 jobs:
   test:
+    timeout-minutes: 2
     name: Test - macOS ${{ matrix.os }} - MACOSX_VERSION_MIN ${{ matrix.macosx-version-min }}
     runs-on: ${{ matrix.os }}
     strategy:
