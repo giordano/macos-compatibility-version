@@ -3,11 +3,15 @@
 runmain: main relibfoo.dylib
 	sw_vers
 	otool -L $<
+	otool -L libbar.dylib
 	otool -L libfoo.dylib
 	./$<
 
-main: main.c libfoo.dylib
-	cc -o $@ $< -L. -lfoo
+main: main.c libbar.dylib
+	cc -o $@ $< -L. -lbar
+
+libbar.dylib: bar.c libfoo.dylib
+	cc -shared -o $@ $^ -L. -lfoo
 	install_name_tool -change libfoo.dylib @rpath/libfoo.dylib $@
 	install_name_tool -add_rpath ${PWD} $@
 
@@ -20,4 +24,4 @@ relibfoo.dylib: foo.c
 	ln -sf libfoo.0.dylib libfoo.dylib
 
 clean:
-	rm -f main libfoo.dylib libfoo.0.dylib
+	rm -f main libfoo.dylib libfoo.0.dylib libbar.dylib
