@@ -11,7 +11,9 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - macos-latest
+          - macos-11
+          - macos-12
     steps:
       - uses: actions/checkout@v3
       - run: make
+      - run: julia -E '@ccall "./libbar.dylib".bar()::Cint'
