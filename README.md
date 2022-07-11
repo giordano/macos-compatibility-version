@@ -19,19 +19,19 @@ Quoting from the man page of `ld`:
         compatibility.
 ```
 
-The file [`main.c`](./main.c), [`foo.c`](./foo.c), and [`Makefile`](./Makefile) in this
+The file [`Makefile`](./Makefile) in this
 repository shows an example of use:
 
-* a shared library `libfoo.dylib` is built from `foo.c`, with compatibility version number
+* a shared library `libfoo.dylib` is built from [`foo.c`](./foo.c), with compatibility version number
   `2.0.0`
-* the program `main` is built from `main.c`, linking to `libfoo.dylib`, requiring
+* the program `main` is built from [`main.c`](./main.c), linking to `libfoo.dylib`, requiring
   compatibility version number `2.0.0` for this library
-* `libfoo.dylib` is built again, but this time setting compatibility version number `1.0.0`
+* `libfoo.dylib` is built again, but this time with compatibility version number `1.0.0`
 * the program `main` is run, after printing to screen some diagnostic messages.
 
 Since `main` requires `libfoo.dylib` with version `2.0.0` and the `libfoo.dylib` shared
 library currently available has version number `1.0.0`, this in principle should trigger the
-check of the version number, and refuse to run `main` because of the incompatible version
+check of the version number, and `main` would not be run because of the incompatible version
 number.  However, whether this check is actually run or not depends on:
 
 * what's the minimum compatible macOS version for the library,
@@ -118,7 +118,7 @@ version of `dyld` is shipped in each version of macOS.
 ### macOS 11.6, `MACOSX_VERSION_MIN`=10.13
 
 ```console
-$ make `MACOSX_VERSION_MIN`=10.13
+$ make MACOSX_VERSION_MIN=10.13
 cc -mmacosx-version-min=10.13 -shared -o libfoo.dylib foo.c -current_version 2.0.0 -compatibility_version 2.0.0
 cc -mmacosx-version-min=10.13 -o main main.c -L. -lfoo
 install_name_tool -change libfoo.dylib @rpath/libfoo.dylib main
@@ -148,7 +148,7 @@ The check is triggered and the program can't be run because of the incompatible 
 ### macOS 11.6, `MACOSX_VERSION_MIN`=10.14
 
 ```console
-$ make `MACOSX_VERSION_MIN`=10.14
+$ make MACOSX_VERSION_MIN=10.14
 cc -mmacosx-version-min=10.14 -shared -o libfoo.dylib foo.c -current_version 2.0.0 -compatibility_version 2.0.0
 cc -mmacosx-version-min=10.14 -o main main.c -L. -lfoo
 install_name_tool -change libfoo.dylib @rpath/libfoo.dylib main
@@ -176,7 +176,7 @@ and the program is run normally.
 ### macOS 12.4, `MACOSX_VERSION_MIN`=10.10
 
 ```console
-$ make `MACOSX_VERSION_MIN`=10.10
+$ make MACOSX_VERSION_MIN=10.10
 cc -mmacosx-version-min=10.10 -shared -o libfoo.dylib foo.c -current_version 2.0.0 -compatibility_version 2.0.0
 cc -mmacosx-version-min=10.10 -o main main.c -L. -lfoo
 install_name_tool -change libfoo.dylib @rpath/libfoo.dylib main
@@ -198,5 +198,5 @@ libfoo.dylib:
 Magic number: 42
 ```
 
-The check is no longer triggered on macOS 12, not even when requesting a relatively old
+The check no longer exists on macOS 12, not even when requesting a relatively old
 version of macOS, and so the program is run normally.
